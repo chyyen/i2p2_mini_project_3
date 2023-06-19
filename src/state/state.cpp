@@ -13,7 +13,13 @@
  */
 int State::evaluate(){
   // [TODO] design your own evaluation function
-  return 0;
+  int val = 0;
+  for(int i = 0; i < 6; i++){
+      for(int j = 0; j < 5; j++){
+          val += board.board[player][i][j] - board.board[1 - player][i][j];
+      }
+  }
+  return val;
 }
 
 
@@ -212,16 +218,16 @@ void State::get_legal_actions(){
 }
 
 
-const char piece_table[2][7][5] = {
-  {" ", "♙", "♖", "♘", "♗", "♕", "♔"},
-  {" ", "♟", "♜", "♞", "♝", "♛", "♚"}
-};
 /**
  * @brief encode the output for command line output
  * 
  * @return std::string 
  */
 std::string State::encode_output(){
+    const char piece_table[2][7][5] = {
+            {" ", "♙", "♖", "♘", "♗", "♕", "♔"},
+            {" ", "♟", "♜", "♞", "♝", "♛", "♚"}
+    };
   std::stringstream ss;
   int now_piece;
   for(int i=0; i<BOARD_H; i+=1){
