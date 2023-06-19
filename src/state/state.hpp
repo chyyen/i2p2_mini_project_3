@@ -43,6 +43,9 @@ enum GameState {
 class State{
   public:
     //You may want to add more property for a state
+	static const int inf = 2000000000;
+	int piece_value[7] = {0, 100, 479, 280, 320, 929, 60000};
+
     GameState game_state = UNKNOWN;
     Board board;
     int player = 0;

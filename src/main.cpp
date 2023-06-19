@@ -519,7 +519,7 @@ int main(int argc, char** argv) {
   
   log.close();
   // Reset state file
-  if (remove(file_state.c_str()) != 0)
-    std::cerr << "Error removing file: " << file_state << "\n";
+  // if (remove(file_state.c_str()) != 0)
+  //  std::cerr << "Error removing file: " << file_state << "\n";
   return 0;
 }

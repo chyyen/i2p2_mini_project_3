@@ -1,4 +1,6 @@
 #include <cstdlib>
+#include <utility>
+#include <stdio.h>
 
 #include "../state/state.hpp"
 #include "./alphabeta.hpp"
@@ -16,12 +18,12 @@ Move ALPHABETA::get_move(State *state, int depth){
         state->get_legal_actions();
 
     auto actions = state->legal_actions;
-    int max_score = -1000000;
-    int alpha = -1000000, beta = 1000000;
+    int max_score = -(state->inf);
+    int alpha = -(state->inf), beta = state->inf;
     Move next_move = Move(Point(-1, -1), Point(-1, -1));
     for(Move action: actions){
         State *next_state = state->next_state(action);
-        int score = alpha_beta(next_state, depth, alpha, beta, false);
+        int score = alpha_beta(next_state, depth, alpha, beta, false, state->player);
         if(score > max_score) {
             next_move = action;
             max_score = score;
@@ -33,22 +35,49 @@ Move ALPHABETA::get_move(State *state, int depth){
     return next_move;
 }
 
-int ALPHABETA::alpha_beta(State *state, int depth, int alpha, int beta, bool chooseMax) {
-    /* base case */
-    if(state->game_state == WIN)
-        return 1000;
-    else if(depth == 0)
-        return state->evaluate();
+std::pair<int, Move> ALPHABETA::get_move2(State *state, int depth){
     if(!state->legal_actions.size())
         state->get_legal_actions();
-    if(!state->legal_actions.size())
-        return state->evaluate();
+
+    auto actions = state->legal_actions;
+    int max_score = -(state->inf);
+    int alpha = -(state->inf), beta = state->inf;
+    Move next_move = Move(Point(-1, -1), Point(-1, -1));
+    for(Move action: actions){
+        State *next_state = state->next_state(action);
+        int score = alpha_beta(next_state, depth, alpha, beta, false, state->player);
+        if(score > max_score) {
+            next_move = action;
+            max_score = score;
+        }
+        alpha = max(alpha, score);
+        if(alpha > beta)
+            break;
+    }
+    return std::make_pair((int)actions.size(), next_move);
+}
+
+int ALPHABETA::alpha_beta(State *state, int depth, int alpha, int beta, bool chooseMax, int root_player) {
+    /* base case */
+    if (state->game_state == WIN) {
+        if (state->player == root_player)
+            return state->inf;
+        else
+            return -(state->inf);
+    }
+    else if (depth == 0){
+        if(state->player == root_player)
+            return state->evaluate();
+        else
+            return -(state->evaluate());
+    }
+    state->get_legal_actions();
     /* */
     auto actions = state->legal_actions;
     if(!chooseMax){
-        int min_score = 1000000;
+        int min_score = state->inf;
         for(Move action : actions) {
-            int cur = alpha_beta(state->next_state(action), depth - 1, alpha, beta, true);
+            int cur = alpha_beta(state->next_state(action), depth - 1, alpha, beta, true, root_player);
             min_score = min(min_score, cur);
             beta = min(beta, cur);
             if(beta <= alpha)
@@ -57,9 +86,9 @@ int ALPHABETA::alpha_beta(State *state, int depth, int alpha, int beta, bool cho
         return min_score;
     }
     else{
-        int max_score = -1000000;
+        int max_score = -(state->inf);
         for(Move action : actions) {
-            int cur =  alpha_beta(state->next_state(action), depth - 1, alpha, beta, false);
+            int cur = alpha_beta(state->next_state(action), depth - 1, alpha, beta, false, root_player);
             max_score = max(max_score, cur);
             alpha = max(alpha, cur);
             if(alpha >= beta)

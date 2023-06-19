@@ -16,7 +16,7 @@ Move MinMax::get_move(State *state, int depth){
         state->get_legal_actions();
 
     auto actions = state->legal_actions;
-    int max_score = -1000000;
+    int max_score = -(state->inf);
     Move next_move = Move(Point(-1, -1), Point(-1, -1));
     for(Move action: actions){
         State *next_state = state->next_state(action);
@@ -31,7 +31,7 @@ Move MinMax::get_move(State *state, int depth){
 
 int MinMax::minmax(State *state, int depth, bool chooseMax) {
     if(state->game_state == WIN)
-        return 1000;
+        return state->inf;
     else if(depth == 0)
         return state->evaluate();
     if(!state->legal_actions.size())
@@ -40,13 +40,13 @@ int MinMax::minmax(State *state, int depth, bool chooseMax) {
         return state->evaluate();
     auto actions = state->legal_actions;
     if(!chooseMax){
-        int min_score = 1000000;
+        int min_score = state->inf;
         for(Move action : actions)
             min_score = min(min_score, minmax(state->next_state(action), depth - 1, true));
         return min_score;
     }
     else{
-        int max_score = -1000000;
+        int max_score = -(state->inf);
         for(Move action : actions)
             max_score = max(max_score, minmax(state->next_state(action), depth - 1, false));
         return max_score;

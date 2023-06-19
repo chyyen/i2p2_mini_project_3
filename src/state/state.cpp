@@ -16,8 +16,10 @@ int State::evaluate(){
   int val = 0;
   for(int i = 0; i < 6; i++){
       for(int j = 0; j < 5; j++){
-          val += board.board[player][i][j] - board.board[1 - player][i][j];
-      }
+		int piece_self = board.board[player][i][j];
+		int piece_enemy = board.board[player ^ 1][i][j];
+		val += piece_value[piece_self] - piece_value[piece_enemy];
+	  }
   }
   return val;
 }
